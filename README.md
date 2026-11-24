@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hisaably
 
-## Getting Started
+**Every expense. Sorted.**
 
-First, run the development server:
+Hisaably is a simple app for splitting group expenses. Add the people in a trip, a flat or a friend group, record who paid for what, and Hisaably works out who owes whom, with the fewest payments needed to settle up.
+
+No sign-up, no login. Your data stays in your own browser.
+
+🔗 **Live app:** [hisaably-sand.vercel.app](https://hisaably-sand.vercel.app)
+
+---
+
+## Features
+
+- **Groups:** create groups for trips, roommates, friends or anything else. Add, rename or remove members.
+- **Expenses:** add, edit and delete expenses, with the title, amount, date, who paid and an optional note.
+- **Equal or custom split:** split equally among the people you pick, or type each person's share. A custom split only saves when the shares add up exactly to the bill.
+- **Balances:** see who gets money back and who owes, per group and across all groups, with "paid" vs "share" for every member.
+- **Settle up:** suggested payments that settle everyone in as few steps as possible. Tap **Mark as paid** after paying by UPI or cash, and **Undo** if you made a mistake. (Hisaably only keeps track; it never moves real money.)
+- **Dashboard:** your totals, your share this month, quick actions, your groups and recent activity.
+- **Backup:** export all your data to a `.json` file and import it again, on the same device or a new one.
+- **Demo data:** sample groups (marked **DEMO**) to try the app, which you can remove or add back from Settings.
+- **Works on phone and desktop:** sidebar on desktop, bottom menu on mobile.
+
+## Money is always exact
+
+All amounts are stored as whole numbers of **paise** (₹1 = 100 paise), never as decimals, so there are no rounding errors.
+When ₹100 is split 3 ways, the shares are ₹33.34 + ₹33.33 + ₹33.33, which add up to exactly ₹100.
+
+## Tech stack
+
+| Part | Tool |
+|---|---|
+| Framework | [Next.js](https://nextjs.org) 16 (App Router) + React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 |
+| Icons | Lucide |
+| Form checks | Zod |
+| Tests | Vitest |
+| Storage | Browser LocalStorage (no backend needed) |
+| Hosting | Vercel |
+
+The data layer sits behind a small repository interface (`load`, `save`, `clear`), so a real database such as Supabase can be added later without changing the screens.
+
+## Run it on your computer
+
+You need [Node.js](https://nodejs.org) 20 or newer and Git.
 
 ```bash
+git clone https://github.com/abhinavkuriofficial/Hisaably.git
+cd Hisaably
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Other commands
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | What it does |
+|---|---|
+| `npm test` | Runs all 80 automated tests (money, splits, balances, settlements, groups, expenses, backup) |
+| `npm run build` | Builds the production version |
+| `npm start` | Runs the production build |
+| `npm run lint` | Checks the code for common mistakes |
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/            Pages (dashboard, groups, balances, settlements, settings)
+├── components/     Screens and UI pieces, grouped by feature
+├── data/           Saving/loading, demo data, backup, and actions
+│   └── actions/    Create / update / delete groups, expenses, settlements
+├── lib/            Money, split, balance and settlement logic + form rules
+├── providers/      App-wide data provider (React context)
+└── types/          Data models
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Privacy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Hisaably has no accounts and no server database. Everything you enter is saved only in your browser on your device. Other people using the same link see their own data, not yours. Use **Settings → Export backup** to keep a copy.
 
-## Deploy on Vercel
+## Author
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Made by **Abhinav Kuri**.
