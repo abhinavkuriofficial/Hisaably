@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/layout/page-header";
-import { ComingSoon } from "@/components/shared/coming-soon";
+import { DataCheckCard } from "@/components/dashboard/data-check-card";
 
 export default function DashboardPage() {
   return (
@@ -8,7 +8,7 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Your groups, balances and recent activity at a glance."
       />
-      <ComingSoon milestone={8} />
+      <DataCheckCard />
     </>
   );
 }
