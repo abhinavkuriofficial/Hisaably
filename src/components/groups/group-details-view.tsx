@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Pencil, Receipt, Trash2 } from "lucide-react";
+import { ArrowLeft, Pencil, Plus, Receipt, Trash2 } from "lucide-react";
 import { useAppData } from "@/providers/app-data-provider";
 import { calculateBalances, totalSpent } from "@/lib/balances";
 import { formatINR } from "@/lib/money";
@@ -13,6 +13,7 @@ import { DemoBadge } from "@/components/shared/demo-badge";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { buttonStyles } from "@/components/shared/button-styles";
+import { ExpenseList } from "@/components/expenses/expense-list";
 import { cn } from "@/lib/utils";
 
 export function GroupDetailsView() {
@@ -68,7 +69,10 @@ export function GroupDetailsView() {
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/groups/${group.id}/expenses/new`} className={buttonStyles("primary")}>
+            <Plus className="size-4" /> Add expense
+          </Link>
           <Link href={`/groups/${group.id}/edit`} className={buttonStyles("outline")}>
             <Pencil className="size-4" /> Edit
           </Link>
@@ -113,9 +117,26 @@ export function GroupDetailsView() {
         </ul>
       </section>
 
-      <p className="mt-6 text-sm text-muted-foreground">
-        Adding and viewing expenses comes in Milestone 6.
-      </p>
+      {/* ---- Expenses ---- */}
+      <section className="mt-6 rounded-xl border border-border bg-card">
+        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+          <h2 className="font-semibold">Expenses</h2>
+          <span className="text-sm text-muted-foreground">{expenses.length} total</span>
+        </div>
+        {expenses.length === 0 ? (
+          <div className="px-5 py-10 text-center">
+            <p className="font-medium">No expenses yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Add the first bill and Hisaably will work out who owes whom.
+            </p>
+            <Link href={`/groups/${group.id}/expenses/new`} className={buttonStyles("primary", "mt-5")}>
+              <Plus className="size-4" /> Add expense
+            </Link>
+          </div>
+        ) : (
+          <ExpenseList expenses={expenses} members={members} youMemberId={group.youMemberId} />
+        )}
+      </section>
 
       <ConfirmDialog
         open={confirmOpen}
