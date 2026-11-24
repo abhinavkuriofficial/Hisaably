@@ -5,16 +5,18 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Pencil, Plus, Receipt, Trash2 } from "lucide-react";
 import { useAppData } from "@/providers/app-data-provider";
-import { calculateBalances, totalSpent } from "@/lib/balances";
+import { getGroupSummary } from "@/lib/group-summary";
 import { formatINR } from "@/lib/money";
 import { deleteGroup } from "@/data/actions/groups";
 import { groupTypeInfo } from "@/components/groups/group-type";
 import { DemoBadge } from "@/components/shared/demo-badge";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
+import { BalanceText } from "@/components/shared/balance-text";
 import { buttonStyles } from "@/components/shared/button-styles";
 import { ExpenseList } from "@/components/expenses/expense-list";
-import { cn } from "@/lib/utils";
+import { SuggestionList } from "@/components/settlements/suggestion-list";
+import { SettlementHistory } from "@/components/settlements/settlement-history";
 
 export function GroupDetailsView() {
   // [groupId] in the folder name -> read it from the URL
@@ -25,8 +27,9 @@ export function GroupDetailsView() {
 
   if (!isLoaded) return <div className="h-96 animate-pulse rounded-xl bg-card" />;
 
-  const group = data.groups.find((g) => g.id === groupId);
-  if (!group) {
+  // Everything about this group, calculated in one place (lib/group-summary.ts)
+  const summary = getGroupSummary(data, groupId);
+  if (!summary) {
     return (
       <EmptyState
         icon={Receipt}
@@ -41,11 +44,9 @@ export function GroupDetailsView() {
     );
   }
 
-  const members = data.members.filter((m) => m.groupId === group.id);
-  const expenses = data.expenses.filter((e) => e.groupId === group.id);
-  const settlements = data.settlements.filter((s) => s.groupId === group.id);
-  const balances = calculateBalances(members, expenses, settlements);
+  const { group, members, expenses, settlements, balances } = summary;
   const { label, icon: Icon } = groupTypeInfo[group.type];
+  const addExpenseLink = `/groups/${group.id}/expenses/new`;
 
   return (
     <>
@@ -65,12 +66,12 @@ export function GroupDetailsView() {
               {group.isDemo && <DemoBadge />}
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              {label} · {members.length} members · {formatINR(totalSpent(expenses))} spent
+              {label} · {members.length} members · {formatINR(summary.totalSpent)} spent
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href={`/groups/${group.id}/expenses/new`} className={buttonStyles("primary")}>
+          <Link href={addExpenseLink} className={buttonStyles("primary")}>
             <Plus className="size-4" /> Add expense
           </Link>
           <Link href={`/groups/${group.id}/edit`} className={buttonStyles("outline")}>
@@ -82,13 +83,12 @@ export function GroupDetailsView() {
         </div>
       </div>
 
-      {/* ---- Members + balances ---- */}
-      <section className="mt-8 rounded-xl border border-border bg-card">
-        <h2 className="border-b border-border px-5 py-4 font-semibold">Members</h2>
-        <ul className="divide-y divide-border">
-          {members.map((m) => {
-            const balance = balances[m.id] ?? 0;
-            return (
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        {/* ---- Members + balances ---- */}
+        <section className="rounded-xl border border-border bg-card">
+          <h2 className="border-b border-border px-5 py-4 font-semibold">Members</h2>
+          <ul className="divide-y divide-border">
+            {members.map((m) => (
               <li key={m.id} className="flex items-center justify-between px-5 py-3.5">
                 <div className="flex items-center gap-3">
                   <span className="flex size-9 items-center justify-center rounded-full bg-secondary text-sm font-semibold">
@@ -101,21 +101,18 @@ export function GroupDetailsView() {
                     )}
                   </span>
                 </div>
-                <span
-                  className={cn(
-                    "text-sm font-medium",
-                    balance > 0 && "text-positive",
-                    balance < 0 && "text-negative",
-                    balance === 0 && "text-muted-foreground",
-                  )}
-                >
-                  {balance > 0 ? `gets ${formatINR(balance)}` : balance < 0 ? `owes ${formatINR(-balance)}` : "settled"}
-                </span>
+                <BalanceText amount={balances[m.id] ?? 0} />
               </li>
-            );
-          })}
-        </ul>
-      </section>
+            ))}
+          </ul>
+        </section>
+
+        {/* ---- Settle up ---- */}
+        <section className="rounded-xl border border-border bg-card">
+          <h2 className="border-b border-border px-5 py-4 font-semibold">Settle up</h2>
+          <SuggestionList summary={summary} />
+        </section>
+      </div>
 
       {/* ---- Expenses ---- */}
       <section className="mt-6 rounded-xl border border-border bg-card">
@@ -129,7 +126,7 @@ export function GroupDetailsView() {
             <p className="mt-1 text-sm text-muted-foreground">
               Add the first bill and Hisaably will work out who owes whom.
             </p>
-            <Link href={`/groups/${group.id}/expenses/new`} className={buttonStyles("primary", "mt-5")}>
+            <Link href={addExpenseLink} className={buttonStyles("primary", "mt-5")}>
               <Plus className="size-4" /> Add expense
             </Link>
           </div>
@@ -137,6 +134,14 @@ export function GroupDetailsView() {
           <ExpenseList expenses={expenses} members={members} youMemberId={group.youMemberId} />
         )}
       </section>
+
+      {/* ---- Payments already made ---- */}
+      {settlements.length > 0 && (
+        <section className="mt-6 rounded-xl border border-border bg-card">
+          <h2 className="border-b border-border px-5 py-4 font-semibold">Payments</h2>
+          <SettlementHistory summaries={[summary]} />
+        </section>
+      )}
 
       <ConfirmDialog
         open={confirmOpen}

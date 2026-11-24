@@ -8,6 +8,7 @@ type ConfirmDialogProps = {
   title: string;
   description: string;
   confirmLabel: string;
+  confirmVariant?: "danger" | "primary"; // red for deleting, green for good actions
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -18,6 +19,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
+  confirmVariant = "danger",
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -51,7 +53,7 @@ export function ConfirmDialog({
           <button className={buttonStyles("outline")} onClick={onCancel} autoFocus>
             Cancel
           </button>
-          <button className={buttonStyles("danger")} onClick={onConfirm}>
+          <button className={buttonStyles(confirmVariant)} onClick={onConfirm}>
             {confirmLabel}
           </button>
         </div>
