@@ -1,5 +1,4 @@
 import type { AppData } from "../types/models";
-import { createDemoData } from "./demo-data";
 import { createEmptyData, type HisaablyRepository } from "./repository";
 
 export const STORAGE_KEY = "hisaably:data";
@@ -28,8 +27,9 @@ export function createLocalStorageRepository(
     async load() {
       const text = storage.getItem(STORAGE_KEY);
 
-      // First visit: nothing saved yet, so start with demo data
-      if (text === null) return createDemoData();
+      // First visit: nothing saved yet, so start empty.
+      // (The dashboard shows a "Try demo data" button for curious visitors.)
+      if (text === null) return createEmptyData();
 
       try {
         const parsed: unknown = JSON.parse(text);

@@ -59,10 +59,10 @@ describe("demo data", () => {
 });
 
 describe("LocalStorage repository", () => {
-  it("first visit (nothing saved) loads demo data", async () => {
+  it("first visit (nothing saved) starts empty", async () => {
     const repo = createLocalStorageRepository(fakeStorage());
     const data = await repo.load();
-    expect(data.groups.map((g) => g.name)).toEqual(["Goa Trip", "Flat 201"]);
+    expect(data).toEqual(createEmptyData());
   });
 
   it("saves and loads the same data back", async () => {
@@ -86,7 +86,7 @@ describe("LocalStorage repository", () => {
     );
   });
 
-  it("clear removes saved data (next load shows demo again)", async () => {
+  it("clear removes saved data (next load starts fresh)", async () => {
     const storage = fakeStorage();
     const repo = createLocalStorageRepository(storage);
     await repo.save(createEmptyData());
