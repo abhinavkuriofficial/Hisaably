@@ -96,7 +96,7 @@ export function GroupDetailsView() {
                   </span>
                   <span className="font-medium">
                     {m.name}
-                    {group.youMemberId === m.id && (
+                    {group.youMemberId === m.id && m.name !== "You" && (
                       <span className="ml-2 text-xs text-muted-foreground">(you)</span>
                     )}
                   </span>

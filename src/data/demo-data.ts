@@ -71,7 +71,7 @@ export function createDemoData(now: Date = new Date()): AppData {
 
   return {
     schemaVersion: 1,
-    profile: { name: "Abhinav" },
+    profile: { name: "" }, // empty: each visitor sets their own name in Settings
     groups: [
       {
         id: goa,
@@ -93,11 +93,11 @@ export function createDemoData(now: Date = new Date()): AppData {
       },
     ],
     members: [
-      member("demo-m-abhinav", goa, "Abhinav"),
+      member("demo-m-abhinav", goa, "You"), // "You" so every visitor sees themselves
       member("demo-m-rahul", goa, "Rahul"),
       member("demo-m-aman", goa, "Aman"),
       member("demo-m-priya", goa, "Priya"),
-      member("demo-m-abhinav-flat", flat, "Abhinav"),
+      member("demo-m-abhinav-flat", flat, "You"),
       member("demo-m-karan", flat, "Karan"),
       member("demo-m-sneha", flat, "Sneha"),
     ],

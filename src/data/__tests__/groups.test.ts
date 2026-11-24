@@ -13,7 +13,7 @@ describe("group form rules (Zod)", () => {
   const valid = {
     name: "  Manali Trip ",
     type: "trip",
-    members: [{ name: "Abhinav" }, { name: "Rahul" }],
+    members: [{ name: "You" }, { name: "Rahul" }],
     youIndex: 0,
   };
 
@@ -82,7 +82,7 @@ describe("updateGroup", () => {
 
     expect(data.groups.find((g) => g.id === flat)?.name).toBe("Flat 202");
     const names = data.members.filter((m) => m.groupId === flat).map((m) => m.name);
-    expect(names).toEqual(["Abhinav", "Karan S", "Sneha", "Neha"]);
+    expect(names).toEqual(["You", "Karan S", "Sneha", "Neha"]);
     // ids of existing members stay the same, so old expenses still work
     expect(data.members.find((m) => m.name === "Karan S")?.id).toBe("demo-m-karan");
   });

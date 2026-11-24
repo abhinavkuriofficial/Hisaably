@@ -82,7 +82,7 @@ export default function BalancesPage() {
                           <div className="min-w-0">
                             <p className="font-medium">
                               {m.name}
-                              {s.group.youMemberId === m.id && (
+                              {s.group.youMemberId === m.id && m.name !== "You" && (
                                 <span className="ml-2 text-xs text-muted-foreground">(you)</span>
                               )}
                             </p>
