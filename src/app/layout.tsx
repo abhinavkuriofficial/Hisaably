@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -24,8 +25,12 @@ export default function RootLayout({
       <body className="min-h-screen">
         {/* Gives every page access to the saved data (Milestone 4) */}
         <AppDataProvider>
-          {/* Desktop: fixed sidebar on the left */}
-          <Sidebar />
+          {/* Desktop: fixed sidebar on the left.
+              Suspense: the sidebar reads the current URL, which pages like
+              /groups/[groupId] only know when opened (Milestone 5) */}
+          <Suspense fallback={null}>
+            <Sidebar />
+          </Suspense>
 
           {/* Mobile: small header on top */}
           <MobileHeader />
@@ -38,7 +43,9 @@ export default function RootLayout({
           </main>
 
           {/* Mobile: navigation bar at the bottom */}
-          <MobileNav />
+          <Suspense fallback={null}>
+            <MobileNav />
+          </Suspense>
         </AppDataProvider>
       </body>
     </html>
